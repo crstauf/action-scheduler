@@ -133,6 +133,35 @@ class System_Command {
 	}
 
 	/**
+	 * Get all system sources.
+	 *
+	 * @param array $args       Positional args.
+	 * @param array $assoc_args Keyed args.
+	 * @uses \ActionScheduler_Versions::get_sources()
+	 * @uses \WP_CLI\Formatter::display_items()
+	 * @uses $this->get_latest_version()
+	 * @return void
+	 */
+	public function sources( array $args, array $assoc_args ) {
+		$instance = \ActionScheduler_Versions::instance();
+		$sources  = $instance->get_sources();
+
+		$rows = array();
+
+		foreach ( $sources as $source => $version ) {
+			$rows[ $source ] = array(
+				'source'  => str_replace( ABSPATH, '', $source ),
+				'version' => $version,
+			);
+		}
+
+		ksort( $rows );
+
+		$formatter = new \WP_CLI\Formatter( $assoc_args, array( 'source', 'version' ) );
+		$formatter->display_items( $rows );
+	}
+
+	/**
 	 * Get current data store.
 	 *
 	 * @return string

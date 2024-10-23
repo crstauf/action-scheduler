@@ -11,6 +11,7 @@ class ActionScheduler_Versions {
 
 	/** @var array<string, callable> */
 	private $versions = array();
+	private $sources  = array();
 
 	/**
 	 * Register version's callback.
@@ -22,7 +23,12 @@ class ActionScheduler_Versions {
 		if ( isset($this->versions[$version_string]) ) {
 			return FALSE;
 		}
+
+		$backtrace = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS );
+		$source    = $backtrace[0]['file'];
+
 		$this->versions[$version_string] = $initialization_callback;
+		$this->sources[$source] = $version_string;
 		return TRUE;
 	}
 
@@ -31,6 +37,10 @@ class ActionScheduler_Versions {
 	 */
 	public function get_versions() {
 		return $this->versions;
+	}
+
+	public function get_sources() {
+		return $this->sources;
 	}
 
 	/**
